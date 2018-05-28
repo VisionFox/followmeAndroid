@@ -1,5 +1,6 @@
 package com.followme.activity;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -7,7 +8,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.followme.bean.User;
+import com.followme.common.ServerResponse;
+import com.followme.exchange.UserModuleRequest;
 import com.followme.lusir.followmeandroid.R;
+import com.google.gson.Gson;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
     private Button registerBtn;
@@ -17,6 +28,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private EditText phoneET;
     private EditText questionET;
     private EditText answerET;
+    private ProgressDialog progressDialog;
 
 
     @Override
@@ -44,7 +56,40 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 String phone = phoneET.getText().toString();
                 String question = questionET.getText().toString();
                 String answer = answerET.getText().toString();
-                Log.d(userName, password);
+
+                User user = new User();
+                user.setUsername(userName);
+                user.setPassword(password);
+                user.setEmail(email);
+                user.setPhone(phone);
+                user.setQuestion(question);
+                user.setAnswer(answer);
+
+                progressDialog = new ProgressDialog(this);
+                progressDialog.setMessage("正在注册...");
+                progressDialog.show();
+
+                UserModuleRequest.register(user, new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.d("注册出现异常", e.toString());
+                        progressDialog.setMessage("注册出现异常");
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        Gson json = new Gson();
+                        String jsonStr = response.body().string();
+                        ServerResponse serverResponse = json.fromJson(jsonStr, ServerResponse.class);
+                        Log.d("注册返回信息", serverResponse.toString());
+                        if (serverResponse.isSuccess()) {
+                            if (progressDialog != null) {
+                                progressDialog.dismiss();
+                            }
+                            finish();
+                        }
+                    }
+                });
                 break;
             default:
                 break;
