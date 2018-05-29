@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.followme.bean.User;
 import com.followme.common.Const;
@@ -65,8 +66,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void login(String account, String password) {
-        String url = Const.SERVER_URL;
-        progressDialog=new ProgressDialog(this);
+        progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("正在登陆...");
         progressDialog.show();
 
@@ -74,7 +74,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.d("登录出现异常", e.toString());
-                progressDialog.setMessage("登录出现异常");
+                if (progressDialog != null) {
+                    progressDialog.dismiss();
+                }
             }
 
             @Override
@@ -83,14 +85,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 String jsonStr = response.body().string();
                 ServerResponse serverResponse = json.fromJson(jsonStr, ServerResponse.class);
                 Log.d("登录返回信息", serverResponse.toString());
-                if (serverResponse.isSuccess()){
-                    if (progressDialog!=null){
+                if (serverResponse.isSuccess()) {
+                    if (progressDialog != null) {
                         progressDialog.dismiss();
                     }
+                    gotoMainActivity();
+                } else {
+                    if (progressDialog != null) {
+                        progressDialog.dismiss();
+                    }
+                    Log.d("登录失败：", serverResponse.getMsg());
                 }
             }
         });
 
+    }
+
+    private void gotoMainActivity() {
+        finish();
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }
 

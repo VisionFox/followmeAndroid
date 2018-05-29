@@ -20,7 +20,7 @@
             android:layout_marginBottom="24dp"
             android:src="@drawable/login_logo_01" />
 
-        <!--  Email Label -->
+        <!--  username Label -->
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
                 android:id="@+id/login_account"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Phone"
+                android:hint="username"
                 android:inputType="textEmailAddress" />
         </android.support.design.widget.TextInputLayout>
 
