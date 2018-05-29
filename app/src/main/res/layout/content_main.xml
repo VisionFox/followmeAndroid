@@ -8,6 +8,7 @@
     tools:context="com.followme.activity.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
+    <include layout="@layout/content_main_inner" />
 
 
 </android.support.constraint.ConstraintLayout>
