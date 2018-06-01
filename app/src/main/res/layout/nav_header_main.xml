@@ -13,21 +13,12 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
 
-
-    <!--<ImageView-->
-        <!--android:id="@+id/imageView"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:contentDescription="@string/nav_header_desc"-->
-        <!--android:paddingTop="@dimen/nav_header_vertical_spacing"-->
-        <!--app:srcCompat="@mipmap/ic_launcher_round" />-->
-
-    <!--&lt;!&ndash;&lt;!&ndash;头像&ndash;&gt;&ndash;&gt;-->
-    <!--<de.hdodenhof.circleimageview.CircleImageView-->
-    <!--android:layout_width="70dp"-->
-    <!--android:layout_height="70dp"-->
-    <!--android:layout_centerInParent="true"-->
-    <!--android:src="@drawable/nav_avatar" />-->
+    <!--&lt;!&ndash;头像&ndash;&gt;-->
+    <de.hdodenhof.circleimageview.CircleImageView
+    android:layout_width="70dp"
+    android:layout_height="70dp"
+    android:layout_centerInParent="true"
+    android:src="@drawable/nav_avatar" />
 
     <TextView
         android:layout_width="match_parent"
