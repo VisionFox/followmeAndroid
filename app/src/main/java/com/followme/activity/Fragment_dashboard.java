@@ -3,9 +3,11 @@ package com.followme.activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.followme.lusir.followmeandroid.R;
 
@@ -16,4 +18,6 @@ public class Fragment_dashboard extends Fragment {
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
         return view;
     }
+
+
 }
