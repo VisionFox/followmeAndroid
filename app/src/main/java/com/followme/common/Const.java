@@ -12,4 +12,10 @@ public class Const {
         String REGISTER = Const.SERVER_URL + "/user/register.do";
         String GET_ATTRACTION_INFO_BY_AREA = Const.SERVER_URL + "/attraction/get_attractions_info_by_area.do";
     }
+
+    public interface handlerFlag {
+        int ERROR = -1;
+        int SUCCESS=0;
+        int ATTRACTION_LIST_INFO = 1;
+    }
 }
