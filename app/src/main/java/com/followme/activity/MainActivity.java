@@ -22,6 +22,10 @@ import com.followme.lusir.followmeandroid.R;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private Fragment fragment_home=new Fragment_home();
+    private Fragment fragment_dashboard=new Fragment_dashboard();
+    private Fragment fragment_notification=new Fragment_notification();
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -30,18 +34,20 @@ public class MainActivity extends AppCompatActivity
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    replaceFragment(new Fragment_home());
+                    replaceFragment(fragment_home);
                     return true;
                 case R.id.navigation_dashboard:
-                    replaceFragment(new Fragment_dashboard());
+                    replaceFragment(fragment_dashboard);
                     return true;
                 case R.id.navigation_notifications:
-                    replaceFragment(new Fragment_notification());
+                    replaceFragment(fragment_notification);
                     return true;
             }
             return false;
         }
     };
+
+
 
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();

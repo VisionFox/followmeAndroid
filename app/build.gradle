@@ -37,5 +37,8 @@ dependencies {
 
     implementation 'com.stone.vega.library:VegaLayoutManager:1.0.6'
 
+    implementation group: 'com.squareup.picasso', name: 'picasso', version: '2.5.2'
+
+
 
 }
