@@ -22,9 +22,11 @@ import com.followme.lusir.followmeandroid.R;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private Fragment fragment_home=new Fragment_home();
-    private Fragment fragment_dashboard=new Fragment_dashboard();
-    private Fragment fragment_notification=new Fragment_notification();
+    private Fragment fragment_home = new Fragment_home();
+    private Fragment fragment_dashboard = new Fragment_dashboard();
+    private Fragment fragment_notification = new Fragment_notification();
+
+    private Fragment currentFragment;
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -34,27 +36,43 @@ public class MainActivity extends AppCompatActivity
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    replaceFragment(fragment_home);
+                    switchFragment(fragment_home);
                     return true;
                 case R.id.navigation_dashboard:
-                    replaceFragment(fragment_dashboard);
+                    switchFragment(fragment_dashboard);
                     return true;
                 case R.id.navigation_notifications:
-                    replaceFragment(fragment_notification);
+                    switchFragment(fragment_notification);
                     return true;
             }
             return false;
         }
     };
 
+    private void switchFragment(Fragment targetFragment) {
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction();
+        if (!targetFragment.isAdded()) {
+            if (currentFragment != null) {
+                transaction
+                        .hide(currentFragment)
+                        .add(R.id.main_frame_layout, targetFragment)
+                        .commit();
+            } else {
+                transaction.replace(R.id.main_frame_layout, targetFragment);
+                transaction.commit();
+            }
 
-
-    private void replaceFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.main_frame_layout, fragment);
-        transaction.commit();
+        } else {
+            transaction
+                    .hide(currentFragment)
+                    .show(targetFragment)
+                    .commit();
+            Log.d("添加了( ⊙o⊙ )哇", "添加了( ⊙o⊙ )哇");
+        }
+        currentFragment = targetFragment;
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +94,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        replaceFragment(new Fragment_home());
+
+        switchFragment(fragment_home);
     }
 
     @Override

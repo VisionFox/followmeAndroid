@@ -39,6 +39,8 @@ public class Fragment_home extends Fragment {
     private static final int flag_error = Const.handlerFlag.ERROR;
     private static final int flag_success = Const.handlerFlag.SUCCESS;
 
+
+
     private Spinner mSpinner;
     private List<String> areaList;
 
@@ -67,16 +69,13 @@ public class Fragment_home extends Fragment {
     };
 
 
-
-
-
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         return view;
     }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -129,6 +128,7 @@ public class Fragment_home extends Fragment {
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 String area = (String) adapterView.getItemAtPosition(position);
                 mTextView.setText("选择为：" + area);
+
                 if (!areaList.get(0).equals(area)) {
                     AttractionModuleRequest.get_attractions_info_by_area(area, mHandler);
                 } else {
