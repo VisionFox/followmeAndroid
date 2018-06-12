@@ -32,13 +32,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Fragment_home extends Fragment {
+public class Fragment_home extends Fragment implements RecyclerView.RecyclerListener {
 
     private static final String TAG = "HomeFragment";
     private static final int flag_attraction_list_info = Const.handlerFlag.ATTRACTION_LIST_INFO;
     private static final int flag_error = Const.handlerFlag.ERROR;
     private static final int flag_success = Const.handlerFlag.SUCCESS;
-
 
 
     private Spinner mSpinner;
@@ -84,6 +83,8 @@ public class Fragment_home extends Fragment {
         mSpinner = getActivity().findViewById(R.id.fragment_spinner);
         mTextView = getActivity().findViewById(R.id.fragment_home_textView);
         mRecyclerView = getActivity().findViewById(R.id.fragment_home_recyclerview);
+
+        mRecyclerView.setRecyclerListener(this);
 
 
         initData();
@@ -139,7 +140,6 @@ public class Fragment_home extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
             }
         });
     }
@@ -149,14 +149,21 @@ public class Fragment_home extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
 //        mRecyclerView.setLayoutManager(new VegaLayoutManager());
         attractionList = new ArrayList<>();
-        mAdapter = new MyAttractionListAdapter(this.getContext(), attractionList);
+        mAdapter = new MyAttractionListAdapter(attractionList);
         mRecyclerView.setAdapter(mAdapter);
+
+//        mRecyclerView.setRecyclerListener(this);/////////////////////////////////////////////////////////////////////////////////
     }
 
     private void showAttraction(List<Attraction> attractionList) {
         this.attractionList.clear();
         this.attractionList.addAll(attractionList);
         mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onViewRecycled(RecyclerView.ViewHolder holder) {
+
     }
 
 
