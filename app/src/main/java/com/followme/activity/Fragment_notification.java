@@ -1,19 +1,94 @@
 package com.followme.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
+
+
+import com.followme.common.MyApplication;
+import com.followme.litePalJavaBean.UserPlan;
 import com.followme.lusir.followmeandroid.R;
 
-public class Fragment_notification extends Fragment {
+import org.litepal.crud.DataSupport;
+
+
+
+public class Fragment_notification extends Fragment implements View.OnClickListener {
+    private Button goButton;
+    private Button delAllButton;
+    private TextView mTextView;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_notifications, container, false);
         return view;
     }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        goButton = getActivity().findViewById(R.id.user_plan_GO_button);
+        delAllButton = getActivity().findViewById(R.id.user_plan_del_all_button);
+        mTextView = getActivity().findViewById(R.id.user_plan_textview);
+
+        goButton.setOnClickListener(this);
+        delAllButton.setOnClickListener(this);
+        mTextView.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.user_plan_GO_button:
+                break;
+            case R.id.user_plan_del_all_button:
+                delAllPlan();
+                break;
+            case R.id.user_plan_textview:
+                Intent intent=new Intent(MyApplication.getContext(),UserPlanDetailActivity.class);
+                startActivity(intent);
+                break;
+        }
+    }
+
+    private void delAllPlan(){
+        DataSupport.deleteAll(UserPlan.class, "uid = ?", String.valueOf(MyApplication.getCurrentUser().getId()));
+        Log.d("删除完成", "删除完成");
+    }
+
+//    private void initPlanList() {
+//        mRecyclerView = getActivity().findViewById(R.id.fragment_notification_recyclerview);
+//        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
+//        mRecyclerView.setLayoutManager(mLayoutManager);
+//        userPlanList = new ArrayList<UserPlan>();
+//        mAdapter = new MyUserPlanListAdapter(userPlanList);
+//        mRecyclerView.setAdapter(mAdapter);
+//    }
+//
+//    private void updateUserPlan() {
+//        userPlanList.clear();
+//        userPlanList.addAll(
+//                DataSupport
+//                        .where("uid = ?", String.valueOf(MyApplication.getCurrentUser().getId()))
+//                        .find(UserPlan.class));
+//
+//        Log.d("sasa","sadadsasadsa");
+//
+//        for (UserPlan t : userPlanList) {
+//            Log.d("当前计划:", t.toString());
+//        }
+//        mAdapter.notifyDataSetChanged();
+//    }
+
 }

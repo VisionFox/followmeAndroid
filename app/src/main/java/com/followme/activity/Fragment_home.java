@@ -35,16 +35,11 @@ import java.util.List;
 public class Fragment_home extends Fragment implements RecyclerView.RecyclerListener {
 
     private static final String TAG = "HomeFragment";
-    private static final int flag_attraction_list_info = Const.handlerFlag.ATTRACTION_LIST_INFO;
     private static final int flag_error = Const.handlerFlag.ERROR;
     private static final int flag_success = Const.handlerFlag.SUCCESS;
-
-
     private Spinner mSpinner;
     private List<String> areaList;
-
     private List<Attraction> attractionList;
-
     private ArrayAdapter<String> arr_adapter;
     private TextView mTextView;
     private RecyclerView mRecyclerView;

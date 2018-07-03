@@ -5,6 +5,9 @@ import android.location.Location;
 import android.os.Bundle;
 
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,15 +26,24 @@ import com.amap.api.services.route.RideRouteResult;
 import com.amap.api.services.route.RouteSearch;
 import com.amap.api.services.route.WalkRouteResult;
 import com.followme.bean.Attraction;
+import com.followme.bean.User;
+import com.followme.common.MyApplication;
+import com.followme.litePalJavaBean.UserPlan;
 import com.followme.lusir.followmeandroid.R;
 import com.followme.util.JsonTransform;
 
 import com.squareup.picasso.Picasso;
 
+import org.litepal.crud.DataSupport;
+import org.litepal.tablemanager.Connector;
 
-public class AttractionDetailActivity extends AppCompatActivity implements AMap.OnMyLocationChangeListener, RouteSearch.OnRouteSearchListener {
+import java.util.List;
+
+
+public class AttractionDetailActivity extends AppCompatActivity implements AMap.OnMyLocationChangeListener, RouteSearch.OnRouteSearchListener, View.OnClickListener {
     private String attractionJson;
     private ImageView imageView;
+    private Button button;
     private TextView textView_name;
     private TextView textView_price;
     private TextView textView_type;
@@ -61,11 +73,14 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
 
 
         imageView = findViewById(R.id.img_attraction_detail);
+        button = findViewById(R.id.attraction_detail_plus_button);
         textView_name = findViewById(R.id.attraction_detail_name);
         textView_price = findViewById(R.id.attraction_detail_price);
         textView_type = findViewById(R.id.attraction_detail_type);
         textView_addr = findViewById(R.id.attraction_detail_addr);
         textView_description = findViewById(R.id.attraction_detail_description);
+
+        button.setOnClickListener(this);
 
         attractionJson = this.getIntent().getExtras().getString("attractionJson");
         attraction = JsonTransform.attractionJsonToattraction(attractionJson);
@@ -87,7 +102,6 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
             LatLng attractionLatlng = new LatLng(attraction.getLatitude(), attraction.getLongitude());
             aMap.addMarker(new MarkerOptions().position(attractionLatlng).title(attraction.getName()).snippet("default"));
 
-            
 
 //            while (true){
 //                if (aMap.getMyLocation()!=null){
@@ -182,5 +196,47 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
     @Override
     public void onRideRouteSearched(RideRouteResult rideRouteResult, int i) {
 
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.attraction_detail_plus_button:
+                addPland(attraction);
+        }
+    }
+
+    private void addPland(Attraction attraction) {
+        Connector.getDatabase();
+        User currentUser = MyApplication.getCurrentUser();
+        Log.d("当前用户为", currentUser.toString());
+        List<UserPlan> userPlans = DataSupport.select("*").where("uid = ?", String.valueOf(currentUser.getId())).find(UserPlan.class);
+        if (attractionHaveBeChoice(userPlans)) {
+            Log.d("当前景点已被选择", "当前景点已被选择");
+            return;
+        }
+        writePland();
+    }
+
+    private void writePland() {
+        UserPlan userPlan = new UserPlan();
+        User currentUser = MyApplication.getCurrentUser();
+        userPlan.setUid(currentUser.getId());
+        userPlan.setPlanNo(1);
+        userPlan.setAttractionId(attraction.getAttractionid());
+        if (userPlan.save()) {
+            Log.d("景点加入计划成功", "景点加入计划成功");
+        } else {
+            Log.d("景点加入计划失败", "景点加入计划失败");
+        }
+    }
+
+    private boolean attractionHaveBeChoice(List<UserPlan> userPlans) {
+        for (UserPlan t : userPlans) {
+            if (t.getAttractionId().longValue() == attraction.getAttractionid().longValue()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

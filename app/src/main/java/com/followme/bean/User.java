@@ -3,7 +3,7 @@ package com.followme.bean;
 import java.io.Serializable;
 import java.util.Date;
 
-public class User implements Serializable{
+public class User implements Serializable {
     private Integer id;
 
     private String username;
@@ -20,11 +20,7 @@ public class User implements Serializable{
 
     private Integer role;
 
-    private Date createTime;
-
-    private Date updateTime;
-
-    public User(Integer id, String username, String password, String email, String phone, String question, String answer, Integer role, Date createTime, Date updateTime) {
+    public User(Integer id, String username, String password, String email, String phone, String question, String answer, Integer role) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -33,8 +29,6 @@ public class User implements Serializable{
         this.question = question;
         this.answer = answer;
         this.role = role;
-        this.createTime = createTime;
-        this.updateTime = updateTime;
     }
 
     public User() {
@@ -105,19 +99,19 @@ public class User implements Serializable{
         this.role = role;
     }
 
-    public Date getCreateTime() {
-        return createTime;
-    }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
 
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", question='" + question + '\'' +
+                ", answer='" + answer + '\'' +
+                ", role=" + role +
+                '}';
     }
 }

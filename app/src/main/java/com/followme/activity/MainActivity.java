@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity
                     .hide(currentFragment)
                     .show(targetFragment)
                     .commit();
-            Log.d("添加了( ⊙o⊙ )哇", "添加了( ⊙o⊙ )哇");
+            Log.d("切换fragment", "切换了( ⊙o⊙ )哇");
         }
         currentFragment = targetFragment;
     }

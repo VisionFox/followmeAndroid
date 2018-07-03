@@ -14,10 +14,12 @@ import android.widget.Toast;
 
 import com.followme.bean.User;
 import com.followme.common.Const;
+import com.followme.common.MyApplication;
 import com.followme.common.ServerResponse;
 import com.followme.exchange.Exchange;
 import com.followme.exchange.UserModuleRequest;
 import com.followme.lusir.followmeandroid.R;
+import com.followme.util.JsonTransform;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -83,13 +85,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onResponse(Call call, Response response) throws IOException {
                 Gson json = new Gson();
                 String jsonStr = response.body().string();
-                ServerResponse serverResponse = json.fromJson(jsonStr, ServerResponse.class);
+                ServerResponse serverResponse = JsonTransform.jsonToServerResponse(jsonStr);
                 Log.d("登录返回信息", serverResponse.toString());
                 if (serverResponse.isSuccess()) {
                     if (progressDialog != null) {
                         progressDialog.dismiss();
                     }
-                    gotoMainActivity();
+                    String temp = json.toJson(serverResponse.getData());
+                    User currentUser = json.fromJson(temp.toString(), User.class);
+                    Log.d("aa", currentUser.toString());
+                    gotoMainActivity(currentUser);
                 } else {
                     if (progressDialog != null) {
                         progressDialog.dismiss();
@@ -101,9 +106,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    private void gotoMainActivity() {
+    private void gotoMainActivity(User currentUser) {
         finish();
-        Intent intent = new Intent(this, MainActivity.class);
+        MyApplication.bindCurrentUser(currentUser);
+        Intent intent = new Intent(MyApplication.getContext(), MainActivity.class);
         startActivity(intent);
     }
 }
