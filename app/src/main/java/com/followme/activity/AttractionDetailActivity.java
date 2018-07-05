@@ -30,6 +30,7 @@ import com.followme.bean.User;
 import com.followme.common.MyApplication;
 import com.followme.litePalJavaBean.UserPlan;
 import com.followme.lusir.followmeandroid.R;
+import com.followme.util.CoordinateTransform;
 import com.followme.util.JsonTransform;
 
 import com.squareup.picasso.Picasso;
@@ -99,19 +100,13 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
             textView_description.setText(attraction.getDescription());
             attractionLatLng = new LatLng(attraction.getLatitude(), attraction.getLongitude());
 
-            LatLng attractionLatlng = new LatLng(attraction.getLatitude(), attraction.getLongitude());
-            aMap.addMarker(new MarkerOptions().position(attractionLatlng).title(attraction.getName()).snippet("default"));
 
+            attractionLatLng = CoordinateTransform.transform(attractionLatLng);
+            
+            aMap.addMarker(new MarkerOptions().position(attractionLatLng).title(attraction.getName()).snippet("纬度："+attractionLatLng.latitude+" 经度："+attractionLatLng.longitude));
 
-//            while (true){
-//                if (aMap.getMyLocation()!=null){
-//                    LatLonPoint fromeLatLonPoint=new LatLonPoint(myLocationLatLng.latitude,myLocationLatLng.longitude);
-//                    LatLonPoint toLatLonPoint=new LatLonPoint(attractionLatlng.latitude,attractionLatlng.longitude);
-//                    RouteSearch.DriveRouteQuery query = new RouteSearch.DriveRouteQuery(new RouteSearch.FromAndTo(fromeLatLonPoint,toLatLonPoint), 0, null, null, "");
-//                    routeSearch.calculateDriveRouteAsyn(query);
-//                    break;
-//                }
-//            }
+            CameraUpdate mCameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(attractionLatLng, 12, 30, 0));
+            aMap.moveCamera(mCameraUpdate);
         }
 
 
@@ -141,9 +136,10 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
     @Override
     public void onMyLocationChange(Location location) {
         if (isFirstUser && aMap.getMyLocation() != null) {
-            LatLng mLatLng = new LatLng(aMap.getMyLocation().getLatitude(), aMap.getMyLocation().getLongitude());
-            CameraUpdate mCameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(mLatLng, 12, 30, 0));
-            aMap.moveCamera(mCameraUpdate);
+            //移动镜头到自己的位置坐标
+//            LatLng mLatLng = new LatLng(aMap.getMyLocation().getLatitude(), aMap.getMyLocation().getLongitude());
+//            CameraUpdate mCameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(mLatLng, 12, 30, 0));
+//            aMap.moveCamera(mCameraUpdate);
             myLocationLatLng = new LatLng(aMap.getMyLocation().getLatitude(), aMap.getMyLocation().getLongitude());
             isFirstUser = false;
         }

@@ -43,7 +43,6 @@ public class MyAttractionListAdapter extends RecyclerView.Adapter<MyAttractionLi
             public void onClick(View view) {
                 int position = holder.getAdapterPosition();
                 Attraction attraction = attractionList.get(position);
-                Toast.makeText(view.getContext(), attraction.toString(), Toast.LENGTH_SHORT).show();
                 Intent detailIntent = new Intent(view.getContext(), AttractionDetailActivity.class);
                 detailIntent.putExtra("attractionJson", JsonTransform.attractionToJson(attraction));
                 mContext.startActivity(detailIntent);
@@ -55,7 +54,6 @@ public class MyAttractionListAdapter extends RecyclerView.Adapter<MyAttractionLi
             public void onClick(View view) {
                 int position = holder.getAdapterPosition();
                 Attraction attraction = attractionList.get(position);
-                Toast.makeText(view.getContext(), attraction.getImageurl(), Toast.LENGTH_SHORT).show();
             }
         });
 

@@ -1,16 +1,17 @@
 package com.followme.activity;
 
-import android.app.Activity;
-import android.content.Context;
+
+import android.icu.text.LocaleDisplayNames;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdate;
@@ -43,8 +44,6 @@ public class Fragment_dashboard extends Fragment implements AMap.OnMyLocationCha
         if (aMap == null) {
             aMap = mMapView.getMap();
         }
-
-
         mapInit();
     }
 
@@ -69,6 +68,7 @@ public class Fragment_dashboard extends Fragment implements AMap.OnMyLocationCha
         if (isFirstUser && aMap.getMyLocation() != null) {
             LatLng mLatLng = new LatLng(aMap.getMyLocation().getLatitude(), aMap.getMyLocation().getLongitude());
             CameraUpdate mCameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(mLatLng, 12, 30, 0));
+//            Log.d(String.valueOf(aMap.getMyLocation().getLatitude()), String.valueOf(aMap.getMyLocation().getLongitude()));
             aMap.moveCamera(mCameraUpdate);
             isFirstUser = false;
         }

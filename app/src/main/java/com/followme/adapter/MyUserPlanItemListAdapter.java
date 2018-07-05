@@ -1,6 +1,5 @@
 package com.followme.adapter;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -68,7 +67,7 @@ public class MyUserPlanItemListAdapter extends RecyclerView.Adapter<MyUserPlanIt
     private void updateList() {
         attractionList.clear();
         userPlanList.clear();
-        
+
         thisAdapter.notifyDataSetChanged();
 
         userPlanList.addAll(
@@ -82,7 +81,6 @@ public class MyUserPlanItemListAdapter extends RecyclerView.Adapter<MyUserPlanIt
                 AttractionModuleRequest.get_attractions_info_by_attraction_id(t.getAttractionId(), mHandler);
             }
         }
-
     }
 
     @Override

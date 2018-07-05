@@ -13,13 +13,11 @@ import android.widget.Button;
 import android.widget.TextView;
 
 
-
 import com.followme.common.MyApplication;
 import com.followme.litePalJavaBean.UserPlan;
 import com.followme.lusir.followmeandroid.R;
 
 import org.litepal.crud.DataSupport;
-
 
 
 public class Fragment_notification extends Fragment implements View.OnClickListener {
@@ -51,18 +49,24 @@ public class Fragment_notification extends Fragment implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.user_plan_GO_button:
+                toTest();
                 break;
             case R.id.user_plan_del_all_button:
                 delAllPlan();
                 break;
             case R.id.user_plan_textview:
-                Intent intent=new Intent(MyApplication.getContext(),UserPlanDetailActivity.class);
+                Intent intent = new Intent(MyApplication.getContext(), UserPlanDetailActivity.class);
                 startActivity(intent);
                 break;
         }
     }
 
-    private void delAllPlan(){
+    private void toTest() {
+        Intent intent = new Intent(MyApplication.getContext(), TestRouteActivity.class);
+        startActivity(intent);
+    }
+
+    private void delAllPlan() {
         DataSupport.deleteAll(UserPlan.class, "uid = ?", String.valueOf(MyApplication.getCurrentUser().getId()));
         Log.d("删除完成", "删除完成");
     }
