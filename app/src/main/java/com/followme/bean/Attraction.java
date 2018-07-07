@@ -1,6 +1,7 @@
 package com.followme.bean;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Attraction {
     private Long attractionid;
@@ -158,5 +159,20 @@ public class Attraction {
                 ", hot=" + hot +
                 ", imageurl='" + imageurl + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Attraction that = (Attraction) o;
+        return attractionid.longValue() == that.attractionid.longValue();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(attractionid);
     }
 }

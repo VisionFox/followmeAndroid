@@ -9,8 +9,7 @@
         android:id="@+id/user_plan_item_attraction_img"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:background="@drawable/ic_localtion" />
+        android:layout_gravity="center_vertical" />
 
     <LinearLayout
         android:layout_width="0dp"

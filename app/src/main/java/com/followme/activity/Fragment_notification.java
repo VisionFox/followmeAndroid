@@ -1,7 +1,10 @@
 package com.followme.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
@@ -13,17 +16,39 @@ import android.widget.Button;
 import android.widget.TextView;
 
 
+import com.followme.bean.Attraction;
+import com.followme.common.Const;
 import com.followme.common.MyApplication;
 import com.followme.litePalJavaBean.UserPlan;
 import com.followme.lusir.followmeandroid.R;
+import com.followme.observer.attractionList.AttractionListObserver;
+import com.followme.util.JsonTransform;
 
 import org.litepal.crud.DataSupport;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Fragment_notification extends Fragment implements View.OnClickListener {
     private Button goButton;
     private Button delAllButton;
     private TextView mTextView;
+
+    private List<Attraction> attractionList=new ArrayList<>();
+
+
+    private Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {//3、定义处理消息的方法
+            switch (msg.what) {
+                case Const.handlerFlag.GET_ATTRACTION_LIST:
+                    attractionList.clear();
+                    attractionList.addAll((List<Attraction>) msg.obj);
+                    funtionGO();
+                    break;
+            }
+        }
+    };
 
     @Nullable
     @Override
@@ -49,7 +74,8 @@ public class Fragment_notification extends Fragment implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.user_plan_GO_button:
-                toTest();
+                AttractionListObserver attractionListObserver = AttractionListObserver.getInstance();
+                attractionListObserver.getUserPlanAttractionList(mHandler);
                 break;
             case R.id.user_plan_del_all_button:
                 delAllPlan();
@@ -61,9 +87,12 @@ public class Fragment_notification extends Fragment implements View.OnClickListe
         }
     }
 
-    private void toTest() {
-        Intent intent = new Intent(MyApplication.getContext(), TestRouteActivity.class);
-        startActivity(intent);
+    private void funtionGO() {
+        Intent routeIntent = new Intent(MyApplication.getContext(), TestRouteActivity.class);
+        routeIntent.putExtra("attractionList", JsonTransform.attractionListToJson(attractionList));
+        startActivity(routeIntent);
+//        Intent intent = new Intent(MyApplication.getContext(), TestRouteActivity.class);
+//        startActivity(intent);
     }
 
     private void delAllPlan() {

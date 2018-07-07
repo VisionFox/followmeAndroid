@@ -17,6 +17,6 @@ public class Const {
     public interface handlerFlag {
         int ERROR = -1;
         int SUCCESS=0;
-        int ATTRACTION_LIST_INFO = 1;
+        int GET_ATTRACTION_LIST = 1;
     }
 }

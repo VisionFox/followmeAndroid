@@ -42,6 +42,18 @@ public class JsonTransform {
         return res;
     }
 
+    public static String attractionListToJson(List<Attraction> attractionList) {
+        String res = gson.toJson(attractionList);
+        return res;
+    }
+
+    public static List<Attraction> attractionListJsonToAttractionList(String attractionListJson) {
+        Type type = new TypeToken<List<Attraction>>() {
+        }.getType();
+        List<Attraction> res = gson.fromJson(attractionListJson, type);
+        return res;
+    }
+
     public static ServerResponse jsonToServerResponse(String json) {
         ServerResponse res = gson.fromJson(json, ServerResponse.class);
         return res;

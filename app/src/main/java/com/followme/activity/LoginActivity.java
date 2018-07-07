@@ -2,7 +2,10 @@ package com.followme.activity;
 
 import android.app.ActionBar;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +23,7 @@ import com.followme.exchange.Exchange;
 import com.followme.exchange.UserModuleRequest;
 import com.followme.lusir.followmeandroid.R;
 import com.followme.util.JsonTransform;
+import com.followme.util.ToastUtil;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -35,6 +39,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private EditText passwordET;
     private ProgressDialog progressDialog;
 
+    private static final String PREFS = "prefs";
+    private static final String PREF_account = "account";
+    private static final String PREF_password = "password";
+    SharedPreferences mSharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +55,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         btnLoginBtn.setOnClickListener(this);
         btnRegisterBtn.setOnClickListener(this);
+
+//        mSharedPreferences = getSharedPreferences(PREFS, MODE_PRIVATE);
+//        checkLoginState();
     }
+
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        checkLoginState();
+//    }
+//
+//    private void checkLoginState() {
+//        String account = mSharedPreferences.getString(PREF_account, "");
+//        String password = mSharedPreferences.getString(PREF_password, "");
+//
+//        if (account == null || account.length() == 0) {
+//            return;
+//        } else {
+//            login(account, password);
+//        }
+//    }
 
     @Override
     public void onClick(View v) {
@@ -93,7 +122,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     }
                     String temp = json.toJson(serverResponse.getData());
                     User currentUser = json.fromJson(temp.toString(), User.class);
-                    Log.d("aa", currentUser.toString());
+                    Log.d("当前用户：", currentUser.toString());
+//                    displayWelcome();
                     gotoMainActivity(currentUser);
                 } else {
                     if (progressDialog != null) {
@@ -112,5 +142,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Intent intent = new Intent(MyApplication.getContext(), MainActivity.class);
         startActivity(intent);
     }
+
+//    private void displayWelcome() {
+//        String account = mSharedPreferences.getString(PREF_account, "");
+//
+//        if (account.length() > 0) {
+////            Toast.makeText(MyApplication.getContext(), "Welcome, " + account + "!", Toast.LENGTH_LONG).show();
+////            ToastUtil.show(this, "Welcome back, " + account + "!");
+//            Log.d("test","test");
+//        } else {
+//            SharedPreferences.Editor e = mSharedPreferences.edit();
+//
+//            String userName = accountET.getText().toString();
+//            e.putString(PREF_password, userName);
+//            e.commit();
+//
+//            String password = passwordET.getText().toString();
+//            e.putString(PREF_password, password);
+//            e.commit();
+//
+//            Log.d("test","test");
+////            Toast.makeText(MyApplication.getContext(), "Welcome, " + account + "!", Toast.LENGTH_LONG).show();
+//        }
+//    }
 }
 
