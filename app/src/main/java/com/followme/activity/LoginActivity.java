@@ -1,10 +1,13 @@
 package com.followme.activity;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.followme.bean.Attraction;
 import com.followme.bean.User;
 import com.followme.common.Const;
 import com.followme.common.MyApplication;
@@ -27,6 +31,7 @@ import com.followme.util.ToastUtil;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -38,44 +43,44 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private EditText accountET;
     private EditText passwordET;
     private ProgressDialog progressDialog;
+    private Activity thisActivity = this;
 
-    private static final String PREFS = "prefs";
-    private static final String PREF_account = "account";
-    private static final String PREF_password = "password";
-    SharedPreferences mSharedPreferences;
+    private static final int flag_error = Const.handlerFlag.ERROR;
+    private static final int flag_success = Const.handlerFlag.SUCCESS;
+    private static final int flag_fail = Const.handlerFlag.FAIL;
+    private Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {//3、定义处理消息的方法
+            switch (msg.what) {
+                case flag_error:
+                    Exception e = (Exception) msg.obj;
+                    ToastUtil.show(thisActivity, "出现异常，报错信息为：" + e.toString());
+                    break;
+                case flag_fail:
+                    ServerResponse serverResponse = (ServerResponse) msg.obj;
+                    ToastUtil.show(thisActivity, serverResponse.getMsg());
+                    break;
+                case flag_success:
+                    User user = (User) msg.obj;
+                    ToastUtil.show(thisActivity, "登录成功，欢迎使用，" + user.getUsername());
+                    gotoMainActivity(user);
+                    break;
+            }
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        btnLoginBtn = (Button) findViewById(R.id.login_loginButton);
-        btnRegisterBtn = (Button) findViewById(R.id.login_registerButton);
-        accountET = (EditText) findViewById(R.id.login_account);
-        passwordET = (EditText) findViewById(R.id.login_password);
+        btnLoginBtn = findViewById(R.id.login_loginButton);
+        btnRegisterBtn = findViewById(R.id.login_registerButton);
+        accountET = findViewById(R.id.login_account);
+        passwordET = findViewById(R.id.login_password);
 
         btnLoginBtn.setOnClickListener(this);
         btnRegisterBtn.setOnClickListener(this);
-
-//        mSharedPreferences = getSharedPreferences(PREFS, MODE_PRIVATE);
-//        checkLoginState();
     }
-
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        checkLoginState();
-//    }
-//
-//    private void checkLoginState() {
-//        String account = mSharedPreferences.getString(PREF_account, "");
-//        String password = mSharedPreferences.getString(PREF_password, "");
-//
-//        if (account == null || account.length() == 0) {
-//            return;
-//        } else {
-//            login(account, password);
-//        }
-//    }
 
     @Override
     public void onClick(View v) {
@@ -104,6 +109,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         UserModuleRequest.login(account, password, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                Message msg = Message.obtain();
+                msg.what = Const.handlerFlag.ERROR;
+                msg.obj = e;
+                mHandler.sendMessage(msg);
                 Log.d("登录出现异常", e.toString());
                 if (progressDialog != null) {
                     progressDialog.dismiss();
@@ -123,13 +132,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     String temp = json.toJson(serverResponse.getData());
                     User currentUser = json.fromJson(temp.toString(), User.class);
                     Log.d("当前用户：", currentUser.toString());
-//                    displayWelcome();
-                    gotoMainActivity(currentUser);
+
+                    Message msg = Message.obtain();
+                    msg.what = Const.handlerFlag.SUCCESS;
+                    msg.obj = currentUser;
+                    mHandler.sendMessage(msg);
                 } else {
                     if (progressDialog != null) {
                         progressDialog.dismiss();
                     }
-                    Log.d("登录失败：", serverResponse.getMsg());
+                    Message msg = Message.obtain();
+                    msg.what = Const.handlerFlag.FAIL;
+                    msg.obj = serverResponse;
+                    mHandler.sendMessage(msg);
                 }
             }
         });
@@ -143,27 +158,5 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         startActivity(intent);
     }
 
-//    private void displayWelcome() {
-//        String account = mSharedPreferences.getString(PREF_account, "");
-//
-//        if (account.length() > 0) {
-////            Toast.makeText(MyApplication.getContext(), "Welcome, " + account + "!", Toast.LENGTH_LONG).show();
-////            ToastUtil.show(this, "Welcome back, " + account + "!");
-//            Log.d("test","test");
-//        } else {
-//            SharedPreferences.Editor e = mSharedPreferences.edit();
-//
-//            String userName = accountET.getText().toString();
-//            e.putString(PREF_password, userName);
-//            e.commit();
-//
-//            String password = passwordET.getText().toString();
-//            e.putString(PREF_password, password);
-//            e.commit();
-//
-//            Log.d("test","test");
-////            Toast.makeText(MyApplication.getContext(), "Welcome, " + account + "!", Toast.LENGTH_LONG).show();
-//        }
-//    }
 }
 

@@ -49,13 +49,13 @@ public class MyAttractionListAdapter extends RecyclerView.Adapter<MyAttractionLi
             }
         });
 
-        holder.mAttractionImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int position = holder.getAdapterPosition();
-                Attraction attraction = attractionList.get(position);
-            }
-        });
+//        holder.mAttractionImageView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                int position = holder.getAdapterPosition();
+//                Attraction attraction = attractionList.get(position);
+//            }
+//        });
 
 
         return holder;

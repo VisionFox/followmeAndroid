@@ -34,7 +34,7 @@ public class UserPlanDetailActivity extends AppCompatActivity {
         mRecyclerView=findViewById(R.id.user_plan_detail_RecycleView);
         mRecyclerView.setLayoutManager(mLayoutManager);
 //        mRecyclerView.setLayoutManager(new VegaLayoutManager());
-        mAdapter = new MyUserPlanItemListAdapter();
-        mRecyclerView.setAdapter(mAdapter);
+//        mAdapter = new MyUserPlanItemListAdapter();
+//        mRecyclerView.setAdapter(mAdapter);
     }
 }

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="80dp"
     android:layout_margin="5dp"
-    android:background="@android:color/transparent"
+    android:background="@color/gray_lite"
     android:orientation="horizontal">
 
     <ImageView
@@ -23,15 +23,15 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:gravity="center_horizontal" />
+            android:gravity="center_horizontal"
+            android:typeface="sans" />
 
         <TextView
             android:id="@+id/attraction_addr"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:gravity="center_horizontal" />
+            android:gravity="center_horizontal"
+            android:typeface="sans" />
     </LinearLayout>
-
-
 </LinearLayout>

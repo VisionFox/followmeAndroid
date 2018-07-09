@@ -1,9 +1,12 @@
 package com.followme.activity;
 
 
+import android.app.Activity;
 import android.location.Location;
 import android.os.Bundle;
 
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -19,7 +22,6 @@ import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
-import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.BusRouteResult;
 import com.amap.api.services.route.DriveRouteResult;
 import com.amap.api.services.route.RideRouteResult;
@@ -27,12 +29,15 @@ import com.amap.api.services.route.RouteSearch;
 import com.amap.api.services.route.WalkRouteResult;
 import com.followme.bean.Attraction;
 import com.followme.bean.User;
+import com.followme.common.Const;
 import com.followme.common.MyApplication;
+import com.followme.common.ServerResponse;
 import com.followme.litePalJavaBean.UserPlan;
 import com.followme.lusir.followmeandroid.R;
 import com.followme.util.CoordinateTransform;
 import com.followme.util.JsonTransform;
 
+import com.followme.util.ToastUtil;
 import com.squareup.picasso.Picasso;
 
 import org.litepal.crud.DataSupport;
@@ -42,6 +47,7 @@ import java.util.List;
 
 
 public class AttractionDetailActivity extends AppCompatActivity implements AMap.OnMyLocationChangeListener, RouteSearch.OnRouteSearchListener, View.OnClickListener {
+    private Activity thisActivity = this;
     private String attractionJson;
     private ImageView imageView;
     private Button button;
@@ -53,7 +59,6 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
 
     private Attraction attraction;
 
-
     private MapView mMapView = null;
     private AMap aMap = null;
     private MyLocationStyle myLocationStyle;
@@ -61,6 +66,29 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
     private RouteSearch routeSearch;
     private LatLng myLocationLatLng;
     private LatLng attractionLatLng;
+
+
+    private static final int flag_error = Const.handlerFlag.ERROR;
+    private static final int flag_success = Const.handlerFlag.SUCCESS;
+    private static final int flag_fail = Const.handlerFlag.FAIL;
+    private Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {//3、定义处理消息的方法
+            switch (msg.what) {
+                case flag_error:
+                    String m1 = (String) msg.obj;
+                    ToastUtil.show(thisActivity, m1);
+                    break;
+                case flag_fail:
+                    String m2 = (String) msg.obj;
+                    ToastUtil.show(thisActivity, m2);
+                    break;
+                case flag_success:
+                    String m3 = (String) msg.obj;
+                    ToastUtil.show(thisActivity, m3);
+                    break;
+            }
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,7 +100,6 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
             aMap = mMapView.getMap();
         }
 
-
         imageView = findViewById(R.id.img_attraction_detail);
         button = findViewById(R.id.attraction_detail_plus_button);
         textView_name = findViewById(R.id.attraction_detail_name);
@@ -82,12 +109,10 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
         textView_description = findViewById(R.id.attraction_detail_description);
 
         button.setOnClickListener(this);
-
         attractionJson = this.getIntent().getExtras().getString("attractionJson");
         attraction = JsonTransform.attractionJsonToattraction(attractionJson);
 
         mapInit();
-
 
         if (attraction != null) {
             String imgURL = attraction.getImageurl();
@@ -102,8 +127,8 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
 
 
             attractionLatLng = CoordinateTransform.transform(attractionLatLng);
-            
-            aMap.addMarker(new MarkerOptions().position(attractionLatLng).title(attraction.getName()).snippet("纬度："+attractionLatLng.latitude+" 经度："+attractionLatLng.longitude));
+
+            aMap.addMarker(new MarkerOptions().position(attractionLatLng).title(attraction.getName()).snippet("纬度：" + attractionLatLng.latitude + " 经度：" + attractionLatLng.longitude));
 
             CameraUpdate mCameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(attractionLatLng, 12, 30, 0));
             aMap.moveCamera(mCameraUpdate);
@@ -129,17 +154,11 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
 
         routeSearch = new RouteSearch(this);
         routeSearch.setRouteSearchListener(this);
-
-
     }
 
     @Override
     public void onMyLocationChange(Location location) {
         if (isFirstUser && aMap.getMyLocation() != null) {
-            //移动镜头到自己的位置坐标
-//            LatLng mLatLng = new LatLng(aMap.getMyLocation().getLatitude(), aMap.getMyLocation().getLongitude());
-//            CameraUpdate mCameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(mLatLng, 12, 30, 0));
-//            aMap.moveCamera(mCameraUpdate);
             myLocationLatLng = new LatLng(aMap.getMyLocation().getLatitude(), aMap.getMyLocation().getLongitude());
             isFirstUser = false;
         }
@@ -205,25 +224,30 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
     private void addPland(Attraction attraction) {
         Connector.getDatabase();
         User currentUser = MyApplication.getCurrentUser();
-        Log.d("当前用户为", currentUser.toString());
         List<UserPlan> userPlans = DataSupport.select("*").where("uid = ?", String.valueOf(currentUser.getId())).find(UserPlan.class);
+
         if (attractionHaveBeChoice(userPlans)) {
-            Log.d("当前景点已被选择", "当前景点已被选择");
+            Message msg = Message.obtain();
+            msg.what = Const.handlerFlag.FAIL;
+            msg.obj = "景点已经添加成功，无需重复添加";
+            mHandler.sendMessage(msg);
             return;
         }
-        writePland();
-    }
 
-    private void writePland() {
         UserPlan userPlan = new UserPlan();
-        User currentUser = MyApplication.getCurrentUser();
         userPlan.setUid(currentUser.getId());
         userPlan.setPlanNo(1);
         userPlan.setAttractionId(attraction.getAttractionid());
         if (userPlan.save()) {
-            Log.d("景点加入计划成功", "景点加入计划成功");
+            Message msg = Message.obtain();
+            msg.what = Const.handlerFlag.SUCCESS;
+            msg.obj = "景点添加成功！！！";
+            mHandler.sendMessage(msg);
         } else {
-            Log.d("景点加入计划失败", "景点加入计划失败");
+            Message msg = Message.obtain();
+            msg.what = Const.handlerFlag.ERROR;
+            msg.obj = "景点添加失败！！！";
+            mHandler.sendMessage(msg);
         }
     }
 

@@ -1,14 +1,11 @@
 package com.followme.activity;
 
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,7 +15,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.followme.adapter.MyAttractionListAdapter;
 import com.followme.bean.Attraction;
@@ -41,7 +37,7 @@ public class Fragment_home extends Fragment implements RecyclerView.RecyclerList
     private List<String> areaList;
     private List<Attraction> attractionList;
     private ArrayAdapter<String> arr_adapter;
-    private TextView mTextView;
+
     private RecyclerView mRecyclerView;
     private MyAttractionListAdapter mAdapter;
 
@@ -76,11 +72,8 @@ public class Fragment_home extends Fragment implements RecyclerView.RecyclerList
         super.onActivityCreated(savedInstanceState);
 
         mSpinner = getActivity().findViewById(R.id.fragment_spinner);
-        mTextView = getActivity().findViewById(R.id.fragment_home_textView);
         mRecyclerView = getActivity().findViewById(R.id.fragment_home_recyclerview);
-
         mRecyclerView.setRecyclerListener(this);
-
 
         initData();
         initDropDownList();
@@ -90,7 +83,7 @@ public class Fragment_home extends Fragment implements RecyclerView.RecyclerList
 
     private void initData() {
         areaList = new ArrayList<String>();
-        areaList.add("未选择区域，请下拉选择");
+        areaList.add("未选择区域，请点击此处进行选择");
         areaList.add("蓝田县");
         areaList.add("长安区");
         areaList.add("碑林区");
@@ -123,7 +116,6 @@ public class Fragment_home extends Fragment implements RecyclerView.RecyclerList
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 String area = (String) adapterView.getItemAtPosition(position);
-                mTextView.setText("选择为：" + area);
 
                 if (!areaList.get(0).equals(area)) {
                     AttractionModuleRequest.get_attractions_info_by_area(area, mHandler);
@@ -140,9 +132,9 @@ public class Fragment_home extends Fragment implements RecyclerView.RecyclerList
     }
 
     private void initRecyclerView() {
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-//        mRecyclerView.setLayoutManager(new VegaLayoutManager());
+//        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
+//        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setLayoutManager(new VegaLayoutManager());
         attractionList = new ArrayList<>();
         mAdapter = new MyAttractionListAdapter(attractionList);
         mRecyclerView.setAdapter(mAdapter);
@@ -160,28 +152,4 @@ public class Fragment_home extends Fragment implements RecyclerView.RecyclerList
     public void onViewRecycled(RecyclerView.ViewHolder holder) {
 
     }
-
-
-//    private class MyRunnable implements Runnable {
-//        @Override
-//        public void run() {
-//            //建立消息循环的步骤
-//            Looper.prepare();//1、初始化Looper
-//            mHandler = new Handler() {//2、绑定handler到CustomThread实例的Looper对象
-//                public void handleMessage(Message msg) {//3、定义处理消息的方法
-//                    switch (msg.what) {
-//                        case flag_error:
-//                            Log.d(TAG, "收到错误异常信息为: " + msg.obj);
-//                            break;
-//                        case flag_success:
-//                            Log.d(TAG, "收到的信息" + msg.obj);
-//                            List<Attraction> attractionList=JsonTransform.ServerResponseToAttractionList((String) msg.obj);
-//                            Log.d("转换得出的景点：",attractionList.toString());
-//                            break;
-//                    }
-//                }
-//            };
-//            Looper.loop();//4、启动消息循环
-//        }
-//    }
 }

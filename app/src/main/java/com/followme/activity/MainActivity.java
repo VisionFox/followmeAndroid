@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity
     private Fragment fragment_home = new Fragment_home();
     private Fragment fragment_dashboard = new Fragment_dashboard();
     private Fragment fragment_notification = new Fragment_notification();
-
     private Fragment currentFragment;
 
 
@@ -52,6 +51,11 @@ public class MainActivity extends AppCompatActivity
     private void switchFragment(Fragment targetFragment) {
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction();
+        ///////////////////////////////////////////////
+        if (targetFragment instanceof Fragment_notification){
+            ((Fragment_notification) targetFragment).updateAttractionList();
+        }
+
         if (!targetFragment.isAdded()) {
             if (currentFragment != null) {
                 transaction
