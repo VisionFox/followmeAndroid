@@ -1,7 +1,11 @@
 package com.followme.activity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -9,9 +13,12 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.followme.bean.User;
+import com.followme.common.Const;
+import com.followme.common.MyApplication;
 import com.followme.common.ServerResponse;
 import com.followme.exchange.UserModuleRequest;
 import com.followme.lusir.followmeandroid.R;
+import com.followme.util.ToastUtil;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -29,6 +36,30 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private EditText questionET;
     private EditText answerET;
     private ProgressDialog progressDialog;
+    private Activity thisActivity = this;
+
+
+    private static final int flag_error = Const.handlerFlag.ERROR;
+    private static final int flag_success = Const.handlerFlag.SUCCESS;
+    private static final int flag_fail = Const.handlerFlag.FAIL;
+    private Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {//3、定义处理消息的方法
+            switch (msg.what) {
+                case flag_error:
+                    Exception e = (Exception) msg.obj;
+                    ToastUtil.show(thisActivity, "出现异常，报错信息为：" + e.toString());
+                    break;
+                case flag_fail:
+                    ServerResponse serverResponse = (ServerResponse) msg.obj;
+                    ToastUtil.show(thisActivity, serverResponse.getMsg());
+                    break;
+                case flag_success:
+                    String succ = (String) msg.obj;
+                    ToastUtil.show(thisActivity, succ);
+                    break;
+            }
+        }
+    };
 
 
     @Override
@@ -72,8 +103,13 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 UserModuleRequest.register(user, new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
-                        Log.d("注册出现异常", e.toString());
-                        progressDialog.setMessage("注册出现异常");
+                        if (progressDialog != null) {
+                            progressDialog.dismiss();
+                        }
+                        Message msg = Message.obtain();
+                        msg.what = Const.handlerFlag.ERROR;
+                        msg.obj = e;
+                        mHandler.sendMessage(msg);
                     }
 
                     @Override
@@ -82,11 +118,20 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                         String jsonStr = response.body().string();
                         ServerResponse serverResponse = json.fromJson(jsonStr, ServerResponse.class);
                         Log.d("注册返回信息", serverResponse.toString());
+                        if (progressDialog != null) {
+                            progressDialog.dismiss();
+                        }
                         if (serverResponse.isSuccess()) {
-                            if (progressDialog != null) {
-                                progressDialog.dismiss();
-                            }
+                            Message msg = Message.obtain();
+                            msg.what = Const.handlerFlag.SUCCESS;
+                            msg.obj = "注册成功！！welcome！！";
+                            mHandler.sendMessage(msg);
                             finish();
+                        } else {
+                            Message msg = Message.obtain();
+                            msg.what = Const.handlerFlag.FAIL;
+                            msg.obj = serverResponse;
+                            mHandler.sendMessage(msg);
                         }
                     }
                 });

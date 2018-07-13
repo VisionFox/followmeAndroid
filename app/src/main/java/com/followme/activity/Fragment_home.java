@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -132,14 +133,13 @@ public class Fragment_home extends Fragment implements RecyclerView.RecyclerList
     }
 
     private void initRecyclerView() {
-//        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
-//        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setLayoutManager(new VegaLayoutManager());
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
+        mRecyclerView.setLayoutManager(mLayoutManager);
+//        mRecyclerView.setLayoutManager(new VegaLayoutManager());
         attractionList = new ArrayList<>();
         mAdapter = new MyAttractionListAdapter(attractionList);
         mRecyclerView.setAdapter(mAdapter);
 
-//        mRecyclerView.setRecyclerListener(this);/////////////////////////////////////////////////////////////////////////////////
     }
 
     private void showAttraction(List<Attraction> attractionList) {

@@ -11,10 +11,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.maps.model.LatLng;
 import com.followme.activity.AttractionDetailActivity;
 import com.followme.bean.Attraction;
 import com.followme.common.MyApplication;
 import com.followme.lusir.followmeandroid.R;
+import com.followme.util.CoordinateTransform;
 import com.followme.util.JsonTransform;
 import com.squareup.picasso.Picasso;
 
@@ -27,7 +29,7 @@ public class MyAttractionListAdapter extends RecyclerView.Adapter<MyAttractionLi
 
 
     //构造器，接受数据集
-    public MyAttractionListAdapter( List<Attraction> attractionList) {
+    public MyAttractionListAdapter(List<Attraction> attractionList) {
         this.attractionList = attractionList;
         this.mContext = MyApplication.getContext();
     }
@@ -43,21 +45,18 @@ public class MyAttractionListAdapter extends RecyclerView.Adapter<MyAttractionLi
             public void onClick(View view) {
                 int position = holder.getAdapterPosition();
                 Attraction attraction = attractionList.get(position);
+
+//                //转换坐标
+//                LatLng attractionLatLng = new LatLng(attraction.getLatitude(), attraction.getLongitude());
+//                attractionLatLng = CoordinateTransform.transform(attractionLatLng);
+//                attraction.setLatitude(attractionLatLng.latitude);
+//                attraction.setLongitude(attractionLatLng.longitude);
+
                 Intent detailIntent = new Intent(view.getContext(), AttractionDetailActivity.class);
                 detailIntent.putExtra("attractionJson", JsonTransform.attractionToJson(attraction));
                 mContext.startActivity(detailIntent);
             }
         });
-
-//        holder.mAttractionImageView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                int position = holder.getAdapterPosition();
-//                Attraction attraction = attractionList.get(position);
-//            }
-//        });
-
-
         return holder;
     }
 

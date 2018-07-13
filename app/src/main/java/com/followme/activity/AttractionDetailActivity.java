@@ -123,12 +123,12 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
             textView_type.setText(attraction.getType());
             textView_addr.setText("地址: " + attraction.getAddr());
             textView_description.setText(attraction.getDescription());
+
             attractionLatLng = new LatLng(attraction.getLatitude(), attraction.getLongitude());
-
-
             attractionLatLng = CoordinateTransform.transform(attractionLatLng);
-
             aMap.addMarker(new MarkerOptions().position(attractionLatLng).title(attraction.getName()).snippet("纬度：" + attractionLatLng.latitude + " 经度：" + attractionLatLng.longitude));
+
+//            aMap.addMarker(new MarkerOptions().position(attractionLatLng).title(attraction.getName()).snippet("纬度：" + attractionLatLng.latitude + " 经度：" + attractionLatLng.longitude));
 
             CameraUpdate mCameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(attractionLatLng, 12, 30, 0));
             aMap.moveCamera(mCameraUpdate);

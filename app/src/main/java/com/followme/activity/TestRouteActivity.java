@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.CameraUpdate;
@@ -36,6 +38,7 @@ import com.followme.overlay.DrivingRouteOverlay;
 import com.followme.util.AMapUtil;
 import com.followme.util.JsonTransform;
 import com.followme.util.ToastUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 

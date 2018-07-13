@@ -1,29 +1,21 @@
 package com.followme.activity;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import com.followme.bean.Attraction;
 import com.followme.bean.User;
 import com.followme.common.Const;
 import com.followme.common.MyApplication;
 import com.followme.common.ServerResponse;
-import com.followme.exchange.Exchange;
 import com.followme.exchange.UserModuleRequest;
 import com.followme.lusir.followmeandroid.R;
 import com.followme.util.JsonTransform;
@@ -31,7 +23,6 @@ import com.followme.util.ToastUtil;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;

@@ -20,7 +20,6 @@ import okhttp3.Response;
 public class AttractionModuleRequest {
     private static final OkHttpClient client = new OkHttpClient();
 
-
     private AttractionModuleRequest() {
     }
 
