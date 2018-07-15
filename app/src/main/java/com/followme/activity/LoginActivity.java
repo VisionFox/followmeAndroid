@@ -39,6 +39,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private static final int flag_error = Const.handlerFlag.ERROR;
     private static final int flag_success = Const.handlerFlag.SUCCESS;
     private static final int flag_fail = Const.handlerFlag.FAIL;
+    /**
+     * 设置handler监听登录返回信息
+     */
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {//3、定义处理消息的方法
             switch (msg.what) {
@@ -92,6 +95,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
+    /**
+     * 发起登录功能
+     *
+     * @param account  账号
+     * @param password 密码
+     */
     public void login(String account, String password) {
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("正在登陆...");
@@ -110,6 +119,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 }
             }
 
+            /**
+             * 回调函数，处理okHttp框架请求线程返回信息
+             *
+             * @param call
+             * @param response
+             * @throws IOException
+             */
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 Gson json = new Gson();
@@ -142,6 +158,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
+    /**
+     * 进入mainactivity并绑定当前用户到工程的全局contex
+     *
+     * @param currentUser
+     */
     private void gotoMainActivity(User currentUser) {
         finish();
         MyApplication.bindCurrentUser(currentUser);

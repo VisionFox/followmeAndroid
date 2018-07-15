@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,6 +34,9 @@ import com.amap.api.services.route.RouteSearch;
 import com.amap.api.services.route.RouteSearch.OnRouteSearchListener;
 import com.amap.api.services.route.WalkRouteResult;
 import com.followme.bean.Attraction;
+import com.followme.bean.User;
+import com.followme.common.Const;
+import com.followme.common.ServerResponse;
 import com.followme.lusir.followmeandroid.R;
 import com.followme.observer.attractionList.AttractionList;
 import com.followme.overlay.DrivingRouteOverlay;
@@ -53,50 +58,84 @@ public class TestRouteActivity extends AppCompatActivity implements AMap.OnMyLoc
     private LatLonPoint mStartPoint;//起点，
     private LatLonPoint mEndPoint;//终点
     private boolean isGetMyLocation = false;
+    private LatLng myLocation;
     private MyLocationStyle myLocationStyle;
-    private LatLonPoint myLocationLatLonPoint = new LatLonPoint(39.942295, 116.335891);
     private List<LatLonPoint> myThroughPointList;
     private List<Attraction> attractionList;
 
     private final int ROUTE_TYPE_DRIVE = 2;
-
     private RelativeLayout mBottomLayout, mHeadLayout;
     private TextView mRotueTimeDes, mRouteDetailDes;
     private ProgressDialog progDialog = null;// 搜索时进度条
 
+    private static final int flag_success = Const.handlerFlag.SUCCESS;
+    private Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {//3、定义处理消息的方法
+            switch (msg.what) {
+                case flag_success:
+                    if (isGetMyLocation) {
+                        startRoute();
+                    }
+                    break;
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        //        setContentView(R.layout.activity_test_route);
         setContentView(R.layout.route_activity);
-        //        mapView = findViewById(R.id.test_route_map);
         mapView = (MapView) findViewById(R.id.route_map);
         mContext = this.getApplicationContext();
         mapView.onCreate(bundle);
-        init();
+        initMap();
         getAttractionList();
-
         if (attractionList == null || attractionList.size() == 0) {
             return;
         }
+    }
 
+    /**
+     * 初始化AMap对象
+     */
+    private void initMap() {
+        if (aMap == null) {
+            aMap = mapView.getMap();
+        }
+        registerListener();
+        mRouteSearch = new RouteSearch(this);
+        mRouteSearch.setRouteSearchListener(this);
+        mBottomLayout = findViewById(R.id.bottom_layout);
+        mHeadLayout = findViewById(R.id.routemap_header);
+        mRotueTimeDes = findViewById(R.id.firstline);
+        mRouteDetailDes = findViewById(R.id.secondline);
+        mHeadLayout.setVisibility(View.GONE);
+
+        myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
+        myLocationStyle.interval(1000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
+        //连续定位、蓝点不会移动到地图中心点，定位点依照设备方向旋转，并且蓝点会跟随设备移动。
+        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);
+        aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
+        aMap.getUiSettings().setMyLocationButtonEnabled(true);//设置默认定位按钮是否显示，非必需设置。
+        aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
+        aMap.showIndoorMap(true);
+        aMap.getUiSettings().setCompassEnabled(true);
+        aMap.getUiSettings().setScaleControlsEnabled(true);
+        aMap.setOnMyLocationChangeListener(this);
+    }
+
+    private void startRoute() {
         setStartPoit();
+        if (attractionList == null || attractionList.size() == 0) {
+            return;
+        }
         setEndPoit();
         setfromandtoMarker();
-//        searchRouteResult(ROUTE_TYPE_DRIVE, RouteSearch.DrivingDefault);
         searchRouteResult(ROUTE_TYPE_DRIVE, RouteSearch.DRIVING_MULTI_STRATEGY_FASTEST_SHORTEST);
     }
 
-    private void getAttractionList() {
-        String jsonStr = this.getIntent().getExtras().getString("attractionList");
-        attractionList = JsonTransform.attractionListJsonToAttractionList(jsonStr);
-    }
-
     private void setStartPoit() {
-        mStartPoint = new LatLonPoint(34.125727, 108.833901);//起点，39.942295,116.335891
-//        mEndPoint = new LatLonPoint(34.31136709, 108.88083104);//终点，39.995576,116.481288
-        Attraction temp = attractionList.get(attractionList.size() - 1);
-        mEndPoint = new LatLonPoint(temp.getLatitude(), temp.getLongitude());
+        mStartPoint = new LatLonPoint(myLocation.latitude, myLocation.longitude);
     }
 
     private void setEndPoit() {
@@ -105,11 +144,9 @@ public class TestRouteActivity extends AppCompatActivity implements AMap.OnMyLoc
 
         LatLng firstPoint = new LatLng(mStartPoint.getLatitude(), mStartPoint.getLongitude());
         LatLng secondPoint;
-
         while (attractionListTemp.size() > 1) {
             int nearestIndex = 0;
             float distance = Float.MAX_VALUE;
-
             for (int index = 0; index < attractionListTemp.size(); ++index) {
                 secondPoint = new LatLng(attractionListTemp.get(index).getLatitude(), attractionListTemp.get(index).getLongitude());
                 if (AMapUtils.calculateLineDistance(firstPoint, secondPoint) < distance) {
@@ -117,7 +154,6 @@ public class TestRouteActivity extends AppCompatActivity implements AMap.OnMyLoc
                     nearestIndex = index;
                 }
             }
-
             firstPoint = new LatLng(attractionListTemp.get(nearestIndex).getLatitude(), attractionListTemp.get(nearestIndex).getLongitude());
             attractionListTemp.remove(nearestIndex);
         }
@@ -130,9 +166,14 @@ public class TestRouteActivity extends AppCompatActivity implements AMap.OnMyLoc
                 break;
             }
         }
-
         mEndPoint = new LatLonPoint(attractionListTemp.get(0).getLatitude(), attractionListTemp.get(0).getLongitude());
     }
+
+    private void getAttractionList() {
+        String jsonStr = this.getIntent().getExtras().getString("attractionList");
+        attractionList = JsonTransform.attractionListJsonToAttractionList(jsonStr);
+    }
+
 
     private void makeThroughPointList(List<Attraction> attractionList) {
         myThroughPointList = new ArrayList<>();
@@ -150,36 +191,6 @@ public class TestRouteActivity extends AppCompatActivity implements AMap.OnMyLoc
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.end)));
     }
 
-    /**
-     * 初始化AMap对象
-     */
-    private void init() {
-        if (aMap == null) {
-            aMap = mapView.getMap();
-        }
-        registerListener();
-        mRouteSearch = new RouteSearch(this);
-        mRouteSearch.setRouteSearchListener(this);
-        mBottomLayout = (RelativeLayout) findViewById(R.id.bottom_layout);
-        mHeadLayout = (RelativeLayout) findViewById(R.id.routemap_header);
-        mRotueTimeDes = (TextView) findViewById(R.id.firstline);
-        mRouteDetailDes = (TextView) findViewById(R.id.secondline);
-        mHeadLayout.setVisibility(View.GONE);
-
-
-        myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
-        myLocationStyle.interval(1000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
-//        myLocationStyle.showMyLocation(true);
-        //连续定位、蓝点不会移动到地图中心点，定位点依照设备方向旋转，并且蓝点会跟随设备移动。
-        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);
-        aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
-        aMap.getUiSettings().setMyLocationButtonEnabled(true);//设置默认定位按钮是否显示，非必需设置。
-        aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
-        aMap.showIndoorMap(true);
-        aMap.getUiSettings().setCompassEnabled(true);
-        aMap.getUiSettings().setScaleControlsEnabled(true);
-        aMap.setOnMyLocationChangeListener(this);
-    }
 
     /**
      * 注册监听
@@ -216,10 +227,6 @@ public class TestRouteActivity extends AppCompatActivity implements AMap.OnMyLoc
         }
     }
 
-    @Override
-    public void onBusRouteSearched(BusRouteResult result, int errorCode) {
-
-    }
 
     @Override
     public void onDriveRouteSearched(DriveRouteResult result, int errorCode) {
@@ -289,6 +296,10 @@ public class TestRouteActivity extends AppCompatActivity implements AMap.OnMyLoc
     @Override
     public void onWalkRouteSearched(WalkRouteResult result, int errorCode) {
 
+    }
+
+    @Override
+    public void onBusRouteSearched(BusRouteResult result, int errorCode) {
     }
 
 
@@ -364,12 +375,13 @@ public class TestRouteActivity extends AppCompatActivity implements AMap.OnMyLoc
             LatLng mLatLng = new LatLng(aMap.getMyLocation().getLatitude(), aMap.getMyLocation().getLongitude());
             CameraUpdate mCameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(mLatLng, 12, 30, 0));
             aMap.moveCamera(mCameraUpdate);
-            isGetMyLocation = true;
-        }
+            myLocation = new LatLng(mLatLng.latitude, mLatLng.longitude);
 
-        if (isGetMyLocation) {
-            myLocationLatLonPoint.setLatitude(aMap.getMyLocation().getLatitude());
-            myLocationLatLonPoint.setLongitude(aMap.getMyLocation().getLongitude());
+            Message msg = Message.obtain();
+            msg.what = Const.handlerFlag.SUCCESS;
+            msg.obj = myLocation;
+            mHandler.sendMessage(msg);
+            isGetMyLocation = true;
         }
     }
 
