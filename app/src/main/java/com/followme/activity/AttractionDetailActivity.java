@@ -210,6 +210,7 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
             return;
         }
 
+        //存储userplan进入sqlite
         UserPlan userPlan = new UserPlan();
         userPlan.setUid(currentUser.getId());
         userPlan.setPlanNo(1);
