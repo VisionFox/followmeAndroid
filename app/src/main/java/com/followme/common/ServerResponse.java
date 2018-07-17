@@ -1,6 +1,7 @@
 package com.followme.common;
 
 import java.io.Serializable;
+//封装服务端响应
 public class ServerResponse<T> implements Serializable {
     private int status;
     private String msg;

@@ -1,13 +1,9 @@
 package com.followme.litePalJavaBean;
 
-import android.util.Log;
-
-import com.followme.bean.Attraction;
 
 import org.litepal.crud.DataSupport;
 
-import java.util.ArrayList;
-
+//我们小组使用litepal这个框架来操纵sqlite，这是一个表的配置项
 public class UserPlan extends DataSupport {
     private Integer uid;
     private Integer planNo;

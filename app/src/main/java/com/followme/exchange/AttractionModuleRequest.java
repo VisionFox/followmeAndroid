@@ -23,6 +23,7 @@ public class AttractionModuleRequest {
     private AttractionModuleRequest() {
     }
 
+    //使用okhttp框架，向我们小组的阿里云服务器发送http请求查询景点列表
     public static void get_attractions_info_by_area(final String area, final Handler mHandler) {
         String url = Const.requestURL.GET_ATTRACTION_INFO_BY_AREA + "?area=陕西·西安·" + area;
         Log.d("URL: ", url);
@@ -51,6 +52,7 @@ public class AttractionModuleRequest {
         });
     }
 
+    //使用okhttp框架，向我们小组的阿里云服务器发送http请求根据id查询景点信息
     public static void get_attractions_info_by_attraction_id(final Long attractionId, final Handler mHandler) {
         String url = Const.requestURL.GET_ATTRACTION_INFO_BY_ATTRACTION_ID + "?attractionId=" + attractionId;
         Log.d("URL: ", url);

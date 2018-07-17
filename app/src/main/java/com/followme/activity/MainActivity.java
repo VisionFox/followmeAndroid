@@ -28,6 +28,31 @@ public class MainActivity extends AppCompatActivity
     private Fragment currentFragment;
 
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        //侧边栏划出效果
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        switchFragment(fragment_home);
+    }
+
+    //底部导航栏绑定相应的fragment
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -48,11 +73,18 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+    /**
+     * 从当前fragment切换到目标fragment
+     *
+     * @param targetFragment 目标fragment
+     */
     private void switchFragment(Fragment targetFragment) {
+        //开启fragment切换事务
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction();
-        ///////////////////////////////////////////////
-        if (targetFragment instanceof Fragment_notification){
+
+        //这个是初始化景点计划列表的操作后面会使用到
+        if (targetFragment instanceof Fragment_notification) {
             ((Fragment_notification) targetFragment).updateAttractionList();
         }
 
@@ -77,30 +109,6 @@ public class MainActivity extends AppCompatActivity
         currentFragment = targetFragment;
     }
 
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-        //侧边栏划出效果
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        switchFragment(fragment_home);
-    }
 
     @Override
     public void onBackPressed() {

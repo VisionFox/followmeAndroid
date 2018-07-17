@@ -7,6 +7,13 @@ import com.amap.api.maps.model.LatLng;
 import com.followme.common.MyApplication;
 
 public class CoordinateTransform {
+    /**
+     * 因为我们服务器上的数据爬取的是去哪网的业务数据，爬到景点的经纬度（使用的是百度地图坐标系）和高德地图的不一致
+     * 所以要转换一下
+     *
+     * @param sourceLatLng 原始经纬度坐标
+     * @return 转换后经纬度坐标
+     */
     public static LatLng transform(LatLng sourceLatLng) {
         CoordinateConverter converter = new CoordinateConverter(MyApplication.getContext());
         converter.from(CoordinateConverter.CoordType.BAIDU);

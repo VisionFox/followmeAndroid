@@ -124,6 +124,7 @@ public class TestRouteActivity extends AppCompatActivity implements AMap.OnMyLoc
         aMap.setOnMyLocationChangeListener(this);
     }
 
+    //开始导航功能
     private void startRoute() {
         setStartPoit();
         if (attractionList == null || attractionList.size() == 0) {
@@ -134,10 +135,15 @@ public class TestRouteActivity extends AppCompatActivity implements AMap.OnMyLoc
         searchRouteResult(ROUTE_TYPE_DRIVE, RouteSearch.DRIVING_MULTI_STRATEGY_FASTEST_SHORTEST);
     }
 
+    //设置出发点
     private void setStartPoit() {
         mStartPoint = new LatLonPoint(myLocation.latitude, myLocation.longitude);
     }
 
+    //设置终点策略是：
+    // （1）从当前点A开始，找到离自己最近的点B
+    // （2）用B点赋值给A，再找里A点最近的B点
+    // 最后一个点设为终点
     private void setEndPoit() {
         List<Attraction> attractionListTemp = new ArrayList<>();
         attractionListTemp.addAll(attractionList);
@@ -169,12 +175,13 @@ public class TestRouteActivity extends AppCompatActivity implements AMap.OnMyLoc
         mEndPoint = new LatLonPoint(attractionListTemp.get(0).getLatitude(), attractionListTemp.get(0).getLongitude());
     }
 
+    //获取intent传来的attractionList
     private void getAttractionList() {
         String jsonStr = this.getIntent().getExtras().getString("attractionList");
         attractionList = JsonTransform.attractionListJsonToAttractionList(jsonStr);
     }
 
-
+    //设置途经点list，除了起始点和终点，其余的点都设为途经点
     private void makeThroughPointList(List<Attraction> attractionList) {
         myThroughPointList = new ArrayList<>();
         for (Attraction a : attractionList) {
@@ -182,6 +189,7 @@ public class TestRouteActivity extends AppCompatActivity implements AMap.OnMyLoc
         }
     }
 
+    //设置起点和终点的图标
     private void setfromandtoMarker() {
         aMap.addMarker(new MarkerOptions()
                 .position(AMapUtil.convertToLatLng(mStartPoint))
@@ -228,11 +236,17 @@ public class TestRouteActivity extends AppCompatActivity implements AMap.OnMyLoc
     }
 
 
+    /**
+     * 获取路线查询结果并绘制到地图里（参考高德地图官网提供的模板）
+     *
+     * @param result    返回结果，
+     * @param errorCode 错误信息码
+     */
     @Override
     public void onDriveRouteSearched(DriveRouteResult result, int errorCode) {
         dissmissProgressDialog();
         aMap.clear();// 清理地图上的所有覆盖物
-        markeThroughPoit();
+        markeThroughPoit();//标记途经点
         if (errorCode == AMapException.CODE_AMAP_SUCCESS) {
             if (result != null && result.getPaths() != null) {
                 if (result.getPaths().size() > 0) {
@@ -369,6 +383,7 @@ public class TestRouteActivity extends AppCompatActivity implements AMap.OnMyLoc
     }
 
 
+    //监听手机位置变化
     @Override
     public void onMyLocationChange(Location location) {
         if (!isGetMyLocation && aMap.getMyLocation() != null) {

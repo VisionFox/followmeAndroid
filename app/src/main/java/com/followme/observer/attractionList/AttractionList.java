@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
+//因为http的请求是异步的，我们小组用观察者模式来设置AttractionList
 public class AttractionList extends Observable {
     private List<Attraction> attractionList;
     private List<UserPlan> userPlanList;
@@ -29,7 +30,6 @@ public class AttractionList extends Observable {
     private static final int flag_error = Const.handlerFlag.ERROR;
     private static final int flag_success = Const.handlerFlag.SUCCESS;
     private static final String TAG = "AttractionList";
-
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {//3、定义处理消息的方法
             switch (msg.what) {
@@ -49,6 +49,7 @@ public class AttractionList extends Observable {
         }
     };
 
+    //设置为单例模式，使用双重锁校验
     public static AttractionList getInstance() {
         if (instance == null) {
             synchronized (AttractionList.class) {
@@ -65,6 +66,7 @@ public class AttractionList extends Observable {
     private AttractionList() {
     }
 
+    //将Attraction加入list里
     public void addAttraction(Attraction attraction) {
         LatLng newLatLng = LatLngUtil.coordinateTransform(attraction.getLatitude(), attraction.getLongitude());
         attraction.setLatitude(newLatLng.latitude);
@@ -73,11 +75,13 @@ public class AttractionList extends Observable {
         Log.d("加入景点", attraction.toString());
     }
 
+    //通知观察者事件的变化
     public void notifyObservers() {
         this.setChanged();
         this.notifyObservers(attractionList);
     }
 
+    //更新list
     public void updateList() {
         attractionList.clear();
         userPlanList.clear();
@@ -87,9 +91,7 @@ public class AttractionList extends Observable {
                         .where("uid = ?", String.valueOf(MyApplication.getCurrentUser().getId()))
                         .find(UserPlan.class)
         );
-
         lenFlag = userPlanList.size();
-
         if (userPlanList.size() > 0) {
             for (UserPlan t : userPlanList) {
                 AttractionModuleRequest.get_attractions_info_by_attraction_id(t.getAttractionId(), mHandler);

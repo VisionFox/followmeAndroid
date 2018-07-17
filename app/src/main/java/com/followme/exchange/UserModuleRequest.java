@@ -16,6 +16,7 @@ public class UserModuleRequest {
     private UserModuleRequest() {
     }
 
+    //使用okhttp框架，向我们小组的阿里云服务器发送http请求登录
     public static void login(final String username, final String password, okhttp3.Callback callback) {
         String url = Const.requestURL.LOGIN;
         FormBody.Builder params = new FormBody.Builder();
@@ -28,6 +29,7 @@ public class UserModuleRequest {
         UserModuleRequest.client.newCall(request).enqueue(callback);
     }
 
+    //使用okhttp框架，向我们小组的阿里云服务器发送http请求注册
     public static void register(final User user, okhttp3.Callback callback) {
         String url = Const.requestURL.REGISTER;
         FormBody.Builder params = new FormBody.Builder();

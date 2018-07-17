@@ -23,26 +23,22 @@ import com.followme.common.Const;
 import com.followme.exchange.AttractionModuleRequest;
 import com.followme.lusir.followmeandroid.R;
 import com.followme.util.JsonTransform;
-import com.stone.vega.library.VegaLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class Fragment_home extends Fragment implements RecyclerView.RecyclerListener {
-
-    private static final String TAG = "HomeFragment";
-    private static final int flag_error = Const.handlerFlag.ERROR;
-    private static final int flag_success = Const.handlerFlag.SUCCESS;
     private Spinner mSpinner;
     private List<String> areaList;
     private List<Attraction> attractionList;
     private ArrayAdapter<String> arr_adapter;
-
     private RecyclerView mRecyclerView;
     private MyAttractionListAdapter mAdapter;
 
-
+    private static final String TAG = "HomeFragment";
+    private static final int flag_error = Const.handlerFlag.ERROR;
+    private static final int flag_success = Const.handlerFlag.SUCCESS;
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {//3、定义处理消息的方法
             switch (msg.what) {
@@ -81,7 +77,7 @@ public class Fragment_home extends Fragment implements RecyclerView.RecyclerList
         initRecyclerView();
     }
 
-
+    //初始化下拉框选项
     private void initData() {
         areaList = new ArrayList<String>();
         areaList.add("未选择区域，请点击此处进行选择");
@@ -105,6 +101,7 @@ public class Fragment_home extends Fragment implements RecyclerView.RecyclerList
         areaList.add("秦始皇陵博物院（兵马俑）");
     }
 
+    //初始化并绑定下拉列表的adapter以及样式
     private void initDropDownList() {
         //为spinner定义适配器，也就是将数据源存入adapter.
         arr_adapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_item, areaList);
@@ -117,7 +114,6 @@ public class Fragment_home extends Fragment implements RecyclerView.RecyclerList
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 String area = (String) adapterView.getItemAtPosition(position);
-
                 if (!areaList.get(0).equals(area)) {
                     AttractionModuleRequest.get_attractions_info_by_area(area, mHandler);
                 } else {
@@ -132,16 +128,16 @@ public class Fragment_home extends Fragment implements RecyclerView.RecyclerList
         });
     }
 
+    //初始化recycleview，其实就是绑定adapter
     private void initRecyclerView() {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
-//        mRecyclerView.setLayoutManager(new VegaLayoutManager());
         attractionList = new ArrayList<>();
         mAdapter = new MyAttractionListAdapter(attractionList);
         mRecyclerView.setAdapter(mAdapter);
-
     }
 
+    //根据attractionList的内容更新recycleview的列表内容
     private void showAttraction(List<Attraction> attractionList) {
         this.attractionList.clear();
         this.attractionList.addAll(attractionList);

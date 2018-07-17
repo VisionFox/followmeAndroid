@@ -21,6 +21,7 @@ public class AttractionListObserver implements Observer {
     private AttractionListObserver() {
     }
 
+    //获取单例
     public static AttractionListObserver getInstance() {
         if (instance == null) {
             synchronized (AttractionList.class) {
@@ -36,6 +37,7 @@ public class AttractionListObserver implements Observer {
         return instance;
     }
 
+    //更新attractionList
     @Override
     public void update(Observable observable, Object o) {
         attractionList.clear();

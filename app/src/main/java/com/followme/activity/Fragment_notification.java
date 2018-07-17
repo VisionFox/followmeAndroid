@@ -77,14 +77,18 @@ public class Fragment_notification extends Fragment implements View.OnClickListe
     }
 
 
+    //更新attractionList
     public void updateAttractionList() {
         if (attractionList == null) {
             attractionList = new ArrayList<>();
         }
+        //先从本手机的sqlite里获取用户的planlist信息
         updateUserPlanList();
+        //异步从服务器获取景点列表信息，结果传回handler
         AttractionListObserver attractionListObserver = AttractionListObserver.getInstance();
         attractionListObserver.getUserPlanAttractionList(mHandler);
     }
+
 
     private void updateUserPlanList() {
         if (userPlanList == null) {
@@ -98,11 +102,11 @@ public class Fragment_notification extends Fragment implements View.OnClickListe
         );
     }
 
+    //初始化recycleview及其相关配置
     private void initUserPlanItemRecyclerView() {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(MyApplication.getContext());
         recyclerView = getActivity().findViewById(R.id.user_plan_detail_RecycleView_new);
         recyclerView.setLayoutManager(mLayoutManager);
-//        mRecyclerView.setLayoutManager(new VegaLayoutManager());
         adapter = new MyUserPlanItemListAdapter(userPlanList, attractionList);
         recyclerView.setAdapter(adapter);
     }
@@ -123,6 +127,7 @@ public class Fragment_notification extends Fragment implements View.OnClickListe
         }
     }
 
+    //开始绘制路线规划的activyty
     private void funtionGO() {
         ToastUtil.show(getActivity(), "开始规划路线！");
         Intent routeIntent = new Intent(MyApplication.getContext(), TestRouteActivity.class);
@@ -130,6 +135,7 @@ public class Fragment_notification extends Fragment implements View.OnClickListe
         startActivity(routeIntent);
     }
 
+    //清空用户的旅游路线计划
     private void delAllPlan() {
         DataSupport.deleteAll(UserPlan.class, "uid = ?", String.valueOf(MyApplication.getCurrentUser().getId()));
         userPlanList.clear();
@@ -137,71 +143,4 @@ public class Fragment_notification extends Fragment implements View.OnClickListe
         changeUserPlanItem();
         ToastUtil.show(getActivity(), "全部清空");
     }
-
-
-//    private Button goButton;
-//    private Button delAllButton;
-//    private TextView mTextView;
-//    private List<Attraction> attractionList = new ArrayList<>();
-//
-//
-//    private Handler mHandler = new Handler() {
-//        public void handleMessage(Message msg) {//3、定义处理消息的方法
-//            switch (msg.what) {
-//                case Const.handlerFlag.GET_ATTRACTION_LIST:
-//                    attractionList.clear();
-//                    attractionList.addAll((List<Attraction>) msg.obj);
-//                    funtionGO();
-//                    break;
-//            }
-//        }
-//    };
-//
-//    @Nullable
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        View view = inflater.inflate(R.layout.fragment_notifications, container, false);
-//        return view;
-//    }
-//
-//    @Override
-//    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-//        super.onActivityCreated(savedInstanceState);
-//
-//        goButton = getActivity().findViewById(R.id.user_plan_GO_button);
-//        delAllButton = getActivity().findViewById(R.id.user_plan_del_all_button);
-//        mTextView = getActivity().findViewById(R.id.user_plan_textview);
-//
-//        goButton.setOnClickListener(this);
-//        delAllButton.setOnClickListener(this);
-//        mTextView.setOnClickListener(this);
-//    }
-//
-//    @Override
-//    public void onClick(View view) {
-//        switch (view.getId()) {
-//            case R.id.user_plan_GO_button:
-//                AttractionListObserver attractionListObserver = AttractionListObserver.getInstance();
-//                attractionListObserver.getUserPlanAttractionList(mHandler);
-//                break;
-//            case R.id.user_plan_del_all_button:
-//                delAllPlan();
-//                break;
-//            case R.id.user_plan_textview:
-//                Intent intent = new Intent(MyApplication.getContext(), UserPlanDetailActivity.class);
-//                startActivity(intent);
-//                break;
-//        }
-//    }
-//
-//    private void funtionGO() {
-//        Intent routeIntent = new Intent(MyApplication.getContext(), TestRouteActivity.class);
-//        routeIntent.putExtra("attractionList", JsonTransform.attractionListToJson(attractionList));
-//        startActivity(routeIntent);
-//    }
-//
-//    private void delAllPlan() {
-//        DataSupport.deleteAll(UserPlan.class, "uid = ?", String.valueOf(MyApplication.getCurrentUser().getId()));
-//        Log.d("计划全部清空完毕", "计划全部清空完毕");
-//    }
 }

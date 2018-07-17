@@ -43,7 +43,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private static final int flag_success = Const.handlerFlag.SUCCESS;
     private static final int flag_fail = Const.handlerFlag.FAIL;
     private Handler mHandler = new Handler() {
-        public void handleMessage(Message msg) {//3、定义处理消息的方法
+        public void handleMessage(Message msg) {
             switch (msg.what) {
                 case flag_error:
                     Exception e = (Exception) msg.obj;
@@ -66,13 +66,13 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        registerBtn = (Button) findViewById(R.id.register_registerButton);
-        userNameET = (EditText) findViewById(R.id.register_userName);
-        passwordET = (EditText) findViewById(R.id.register_password);
-        emailET = (EditText) findViewById(R.id.register_email);
-        phoneET = (EditText) findViewById(R.id.register_phone);
-        questionET = (EditText) findViewById(R.id.register_question);
-        answerET = (EditText) findViewById(R.id.register_answer);
+        registerBtn = findViewById(R.id.register_registerButton);
+        userNameET = findViewById(R.id.register_userName);
+        passwordET = findViewById(R.id.register_password);
+        emailET = findViewById(R.id.register_email);
+        phoneET = findViewById(R.id.register_phone);
+        questionET = findViewById(R.id.register_question);
+        answerET = findViewById(R.id.register_answer);
 
         registerBtn.setOnClickListener(this);
     }
@@ -100,6 +100,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 progressDialog.setMessage("正在注册...");
                 progressDialog.show();
 
+                //使用自己封装好的request工具类，发送注册信息，并完成相应的回调处理
                 UserModuleRequest.register(user, new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {

@@ -62,9 +62,7 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
     private MapView mMapView = null;
     private AMap aMap = null;
     private MyLocationStyle myLocationStyle;
-    private boolean isFirstUser = true;
     private RouteSearch routeSearch;
-    private LatLng myLocationLatLng;
     private LatLng attractionLatLng;
 
 
@@ -72,7 +70,7 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
     private static final int flag_success = Const.handlerFlag.SUCCESS;
     private static final int flag_fail = Const.handlerFlag.FAIL;
     private Handler mHandler = new Handler() {
-        public void handleMessage(Message msg) {//3、定义处理消息的方法
+        public void handleMessage(Message msg) {
             switch (msg.what) {
                 case flag_error:
                     String m1 = (String) msg.obj;
@@ -114,6 +112,7 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
 
         mapInit();
 
+        //景点信息如果不为空就绘制相应的界面
         if (attraction != null) {
             String imgURL = attraction.getImageurl();
             Picasso.with(this).load(imgURL).placeholder(R.drawable.ic_localtion).into(imageView);
@@ -125,23 +124,19 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
             textView_description.setText(attraction.getDescription());
 
             attractionLatLng = new LatLng(attraction.getLatitude(), attraction.getLongitude());
+            //因为我们的景点信息是通过爬虫爬取去哪儿网的业务数据，位置坐标系和高德的不一样所以要转换一下
             attractionLatLng = CoordinateTransform.transform(attractionLatLng);
+            //在地图上设置定位小蓝点
             aMap.addMarker(new MarkerOptions().position(attractionLatLng).title(attraction.getName()).snippet("纬度：" + attractionLatLng.latitude + " 经度：" + attractionLatLng.longitude));
-
-//            aMap.addMarker(new MarkerOptions().position(attractionLatLng).title(attraction.getName()).snippet("纬度：" + attractionLatLng.latitude + " 经度：" + attractionLatLng.longitude));
-
             CameraUpdate mCameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(attractionLatLng, 12, 30, 0));
             aMap.moveCamera(mCameraUpdate);
         }
-
-
     }
 
+    //初始化高德地图的各种配置
     private void mapInit() {
-
         myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
         myLocationStyle.interval(1000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
-//        myLocationStyle.showMyLocation(true);
         //连续定位、蓝点不会移动到地图中心点，定位点依照设备方向旋转，并且蓝点会跟随设备移动。
         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);
         aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
@@ -156,12 +151,9 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
         routeSearch.setRouteSearchListener(this);
     }
 
+
     @Override
     public void onMyLocationChange(Location location) {
-        if (isFirstUser && aMap.getMyLocation() != null) {
-            myLocationLatLng = new LatLng(aMap.getMyLocation().getLatitude(), aMap.getMyLocation().getLongitude());
-            isFirstUser = false;
-        }
     }
 
 
@@ -193,25 +185,6 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
         mMapView.onSaveInstanceState(outState);
     }
 
-    @Override
-    public void onBusRouteSearched(BusRouteResult busRouteResult, int i) {
-
-    }
-
-    @Override
-    public void onDriveRouteSearched(DriveRouteResult driveRouteResult, int i) {
-
-    }
-
-    @Override
-    public void onWalkRouteSearched(WalkRouteResult walkRouteResult, int i) {
-
-    }
-
-    @Override
-    public void onRideRouteSearched(RideRouteResult rideRouteResult, int i) {
-
-    }
 
     @Override
     public void onClick(View view) {
@@ -221,11 +194,14 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
         }
     }
 
+    //将此景点的id信息写入手机的sqlite里
     private void addPland(Attraction attraction) {
         Connector.getDatabase();
         User currentUser = MyApplication.getCurrentUser();
+        //查询sqlite里本人的计划列表
         List<UserPlan> userPlans = DataSupport.select("*").where("uid = ?", String.valueOf(currentUser.getId())).find(UserPlan.class);
 
+        //判断userPlans有没有加入当前景点
         if (attractionHaveBeChoice(userPlans)) {
             Message msg = Message.obtain();
             msg.what = Const.handlerFlag.FAIL;
@@ -251,6 +227,7 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
         }
     }
 
+    //判断userPlans里有没有当前景点（全局：attraction）
     private boolean attractionHaveBeChoice(List<UserPlan> userPlans) {
         for (UserPlan t : userPlans) {
             if (t.getAttractionId().longValue() == attraction.getAttractionid().longValue()) {
@@ -259,4 +236,26 @@ public class AttractionDetailActivity extends AppCompatActivity implements AMap.
         }
         return false;
     }
+
+
+    @Override
+    public void onBusRouteSearched(BusRouteResult busRouteResult, int i) {
+
+    }
+
+    @Override
+    public void onDriveRouteSearched(DriveRouteResult driveRouteResult, int i) {
+
+    }
+
+    @Override
+    public void onWalkRouteSearched(WalkRouteResult walkRouteResult, int i) {
+
+    }
+
+    @Override
+    public void onRideRouteSearched(RideRouteResult rideRouteResult, int i) {
+
+    }
+
 }

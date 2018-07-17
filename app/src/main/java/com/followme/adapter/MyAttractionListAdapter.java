@@ -45,13 +45,6 @@ public class MyAttractionListAdapter extends RecyclerView.Adapter<MyAttractionLi
             public void onClick(View view) {
                 int position = holder.getAdapterPosition();
                 Attraction attraction = attractionList.get(position);
-
-//                //转换坐标
-//                LatLng attractionLatLng = new LatLng(attraction.getLatitude(), attraction.getLongitude());
-//                attractionLatLng = CoordinateTransform.transform(attractionLatLng);
-//                attraction.setLatitude(attractionLatLng.latitude);
-//                attraction.setLongitude(attractionLatLng.longitude);
-
                 Intent detailIntent = new Intent(view.getContext(), AttractionDetailActivity.class);
                 detailIntent.putExtra("attractionJson", JsonTransform.attractionToJson(attraction));
                 mContext.startActivity(detailIntent);

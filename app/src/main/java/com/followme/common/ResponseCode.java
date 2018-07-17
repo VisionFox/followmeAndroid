@@ -1,5 +1,6 @@
 package com.followme.common;
 
+//为了和服务端方便交流而设置的响应码
 public enum ResponseCode {
     SUCCESS(0, "SUCCESS"),
     ERROR(1, "ERROR"),

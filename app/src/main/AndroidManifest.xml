@@ -67,12 +67,7 @@
             android:label="attractionDetailActivity"
             android:parentActivityName="com.followme.activity.MainActivity"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name="com.followme.activity.UserPlanDetailActivity"
-            android:label="UserPlanDetailActivity"
-            android:parentActivityName="com.followme.activity.MainActivity"
-            android:theme="@style/AppTheme" />
-        <activity android:name="com.followme.activity.TestRouteActivity"></activity>
+        <activity android:name="com.followme.activity.TestRouteActivity" />
     </application>
 
 </manifest>

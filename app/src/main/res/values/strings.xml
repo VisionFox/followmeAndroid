@@ -7,4 +7,7 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="followmeGroupInfo_1">姓名：陆颖  学号：15180210026</string>
+    <string name="followmeGroupInfo_2">姓名：康辉  学号：15180210013</string>
+    <string name="followmeGroupInfo_3">姓名：赵永志  学号：15180210050</string>
 </resources>

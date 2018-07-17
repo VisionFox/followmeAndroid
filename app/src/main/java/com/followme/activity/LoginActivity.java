@@ -40,7 +40,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private static final int flag_success = Const.handlerFlag.SUCCESS;
     private static final int flag_fail = Const.handlerFlag.FAIL;
     /**
-     * 设置handler监听登录返回信息
+     * 设置handler监听登录返回信息（因为http请求实在okhttp3的线程里启动的，返回过程也是异步回调。
+     * 也因为组件更新只能在主线程里执行更新，请求完毕后发送相应的信息给主线程的handler，触发相应的操作
+     * ）
      */
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {//3、定义处理消息的方法
@@ -139,7 +141,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     String temp = json.toJson(serverResponse.getData());
                     User currentUser = json.fromJson(temp.toString(), User.class);
                     Log.d("当前用户：", currentUser.toString());
-
                     Message msg = Message.obtain();
                     msg.what = Const.handlerFlag.SUCCESS;
                     msg.obj = currentUser;

@@ -10,14 +10,17 @@ public class LatLngUtil {
     private LatLngUtil() {
     }
 
+    //根据经纬度构造LatLng
     public static LatLng makeLatLng(double latitude, double longitude) {
         return new LatLng(latitude, longitude);
     }
 
+    //根据经纬度构造转换好的LatLng
     public static LatLng coordinateTransform(double latitude, double longitude) {
         return coordinateTransform(makeLatLng(latitude, longitude));
     }
 
+    //坐标转换
     public static LatLng coordinateTransform(LatLng sourceLatLng) {
         CoordinateConverter converter = new CoordinateConverter(MyApplication.getContext());
         converter.from(CoordinateConverter.CoordType.BAIDU);
